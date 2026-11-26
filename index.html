@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>무봉리의 골프존</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff8c9;--card:#ffffff;--ink:#000000;--sub:#333333;--g:#0050e6;--gd:#0a2a9c;--red:#e60000;--line:#111111;--dis:#9a9a9a;--ov:rgba(0,0,0,.6);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08081f;--card:#14143a;--ink:#ffffff;--sub:#e0e4ff;--g:#1f6fff;--gd:#0a2a9c;--red:#ff3b30;--line:#6a74ff;--dis:#6a6a8a;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 'Noto Sans KR',system-ui,sans-serif;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:12px}
+h1{font-family:'Black Han Sans','Noto Sans KR',sans-serif;font-weight:400;margin:0;color:var(--gd);letter-spacing:.5px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{color:#ffd400}}
+.title{font-size:clamp(30px,7vw,48px);text-align:center;margin:18px 0 4px}
+.sub{text-align:center;color:var(--sub);margin:0 0 18px}
+button{font:inherit;font-weight:700;cursor:pointer;border:3px solid var(--g);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 14px}
+button.on{background:var(--g);color:#fff}
+button:disabled,button.dis{border-color:var(--dis);color:var(--dis);background:transparent;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.p{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px}
+.p .nm{width:100%;font-size:20px;font-weight:700;padding:14px}
+.p input.gn{width:100%;font:inherit;font-size:18px;text-align:center;padding:12px;margin-top:8px;border:2px solid var(--g);border-radius:16px;background:var(--card);color:var(--ink)}
+.p select{width:100%;margin-top:8px;font:inherit;padding:10px;border-radius:12px;border:2px solid var(--g);background:var(--card);color:var(--ink)}
+.p select:disabled{border-color:var(--dis);color:var(--dis)}
+.lab{font-size:13px;color:var(--sub);margin-top:8px}
+.start{display:block;margin:20px auto;font-size:20px;padding:14px 40px;font-weight:700}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0}
+.top h1{font-size:22px}.top .hn{font-weight:700;font-size:18px;color:var(--red)}
+.nav{display:flex;justify-content:space-between;gap:8px;margin:8px 0}
+.nav button{font-weight:700;min-width:96px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px}
+.tabs span{flex:0 0 auto;padding:6px 10px;border-radius:12px;border:2px solid var(--line);color:var(--ink);font-size:14px;background:var(--card)}
+.tabs span.cur{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;align-items:center}
+.row b{font-size:14px;color:var(--sub);margin-right:4px}
+.row button.dbl.on{background:var(--red);border-color:var(--red)}
+.pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.pc{text-align:left;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;position:relative}
+.pc .n{font-weight:700;font-size:18px}.pc .pt{font-size:32px;font-weight:700;font-family:'Black Han Sans',sans-serif;color:#0050e6}.pc.on .pt{color:#ffd400}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pc:not(.on) .pt{color:#ffd400}}
+.pc .rs{font-size:15px;min-height:20px;color:var(--sub)}.pc.on .rs{color:#fff}.pc.on .n{color:#fff}
+.pc .nr{position:absolute;right:10px;top:10px;font-size:12px;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px}
+.mo{position:fixed;inset:0;background:var(--ov);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.md{background:var(--card);border-radius:20px;padding:18px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+.md h3{margin:0 0 12px}.md .ops{display:flex;flex-wrap:wrap;gap:8px}.md .ops button{flex:1 0 40%;font-weight:700}
+.md .cl{margin-top:12px;width:100%;border-color:var(--line);color:var(--sub)}
+.rk2{font-size:15px;font-weight:700;color:var(--red)}.pc.on .rk2{color:#ffd400}.pc.first{border-color:#ffb800;box-shadow:0 0 0 4px #ffd400;padding:18px 16px}.pc.first .n{font-size:23px}.pc.first .pt{font-size:42px}.pc.first .rk2{font-size:18px}
+.fin{text-align:center;position:relative}
+.fin h1{font-size:clamp(34px,8vw,56px);margin:20px 0}
+.rk{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
+.rk div{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;font-size:20px;font-weight:700}
+.rk div:first-child{border:3px solid #e0a800;font-size:26px}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:40}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const NAMES=['거침없이곧장','도명파파','망나니오빠','무봉리이장','준본부장','Guest'];
+const LV=['이글','버디','파','보기','더블','트리플','쿼드러플','퀀터플'];
+let S;
+function fresh(){return{screen:'home',sel:NAMES.map(()=>false),avg:NAMES.map(()=>80),guest:''}}
+S=fresh();
+const $=s=>document.querySelector(s);
+const el=(h)=>{const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild};
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ---------- 첫 화면 ---------- */
+function home(){
+  const n=S.sel.filter(Boolean).length;
+  $('#app').innerHTML=`<h1 class="title">무봉리의 골프존</h1><p class="sub">참가자를 선택하고 평균타수를 정하세요 (2~6명)</p>
+  <div class="grid">${NAMES.map((nm,i)=>`<div class="p">
+   <button class="nm ${S.sel[i]?'on':''}" data-t="${i}">${i==5?'Guest':nm}</button>
+   ${i==5?`<input class="gn" id="gn" placeholder="이름 입력 (한글/영어)" value="${esc(S.guest)}" ${S.sel[i]?'':'disabled'} maxlength="12">`:''}
+   <div class="lab">평균타수</div>
+   <select data-a="${i}" ${S.sel[i]?'':'disabled'}>${Array.from({length:41},(_,k)=>60+k).map(v=>`<option ${S.avg[i]==v?'selected':''}>${v}</option>`).join('')}</select>
+  </div>`).join('')}</div>
+  <button class="start ${n>=2?'on':''}" id="go" ${n>=2?'':'disabled'}>게임시작</button>`;
+  document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{S.sel[b.dataset.t]=!S.sel[b.dataset.t];home()});
+  document.querySelectorAll('[data-a]').forEach(s=>s.onchange=()=>{S.avg[s.dataset.a]=+s.value});
+  const g=$('#gn');if(g)g.oninput=()=>{S.guest=g.value};
+  $('#go').onclick=startGame;
+}
+function startGame(){
+  let ps=[];
+  NAMES.forEach((nm,i)=>{if(S.sel[i])ps.push({name:i==5?(S.guest.trim()||'Guest'):nm,avg:S.avg[i]})});
+  ps.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  ps.forEach(p=>{p.base=100;ps.forEach(q=>{if(q!==p)p.base+=q.avg-p.avg})});
+  S.ps=ps;S.cur=0;
+  S.holes=Array.from({length:18},()=>({par:4,dbl:false,man:false,near:null,sc:ps.map(()=>null)}));
+  S.screen='game';game();
+}
+
+/* ---------- 규칙 ---------- */
+function opts(par){const a=[];for(let l=0;l<=par+1;l++)a.push({l,t:LV[l]});a.push({l:par+2,t:par+'양파'});return a}
+function label(par,l){return l==par+2?par+'양파':LV[l]}
+function pts(a,b){return a==0?(b==1?4:b+5):a==1?b+1:b-a}
+function delta(h){
+  const m=h.dbl?2:1,n=S.ps.length,d=Array(n).fill(0);
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){
+    const a=h.sc[i],b=h.sc[j];
+    if(a<b){const p=pts(a,b)*m;d[i]+=p;d[j]-=p}
+  }
+  if(h.par==3&&h.near!=null&&h.near>=0){
+    const w=h.near,good=h.sc[w]<=2;
+    for(let j=0;j<n;j++)if(j!=w){const p=m;if(good){d[w]+=p;d[j]-=p}else{d[w]-=p;d[j]+=p}}
+  }
+  return d;
+}
+function trigger(h){
+  const n=S.ps.length,cnt={};h.sc.forEach(l=>cnt[l]=(cnt[l]||0)+1);
+  const th={3:3,4:3,5:4,6:4}[n];
+  if(th&&Math.max(...Object.values(cnt))>=th)return true;
+  return h.sc.some(l=>l<=1||l>=5);
+}
+function totals(upto){
+  const t=S.ps.map(p=>p.base);
+  for(let k=0;k<upto;k++){delta(S.holes[k]).forEach((v,i)=>t[i]+=v)}
+  return t;
+}
+const done=h=>h.sc.every(v=>v!==null)&&(h.par!=3||h.near!=null);
+
+/* ---------- 본게임 ---------- */
+function game(){
+  const h=S.holes[S.cur],t=totals(S.cur),ok=done(h);const rk=t.map(v=>1+t.filter(x=>x>v).length),tie=new Set(t).size==1;
+  $('#app').innerHTML=`<div class="top"><h1>무봉리의 골프존</h1><span class="hn">${S.cur+1}번홀 입니다</span></div>
+  <div class="nav"><button id="pv" ${S.cur?'':'disabled'}>이전홀</button><button id="nx" class="${ok?'on':'dis'}">${S.cur==17?'결과보기':'다음홀'}</button></div>
+  <div class="tabs">${S.holes.map((_,i)=>`<span class="${i==S.cur?'cur':''}" ${i==S.cur?'id="ct"':''}>${i+1}번홀</span>`).join('')}</div>
+  <div class="row"><b>파</b>${[3,4,5,6].map(p=>`<button data-par="${p}" class="${h.par==p?'on':''}">Par${p}</button>`).join('')}</div>
+  ${h.par==3?`<div class="row"><b>니어리스트</b>${S.ps.map((p,i)=>`<button data-nr="${i}" class="${h.near===i?'on':''}">${esc(p.name)}</button>`).join('')}<button data-nr="-1" class="${h.near===-1?'on':''}">없음</button></div>`:''}
+  <div class="row"><b>판</b><button data-d="0" class="${h.dbl?'':'on'}">민판 1배</button><button data-d="1" class="dbl ${h.dbl?'on':''}">배판 2배</button></div>
+  <div class="pl">${S.ps.map((p,i)=>`<button class="pc ${h.sc[i]!==null?'on':''} ${rk[i]==1&&!tie?'first':''}" data-p="${i}">
+    ${h.near===i&&h.par==3?'<span class="nr">니어리스트</span>':''}
+    <span class="n">${esc(p.name)}</span><span class="pt">${t[i]}</span><span class="rk2">${rk[i]==1&&!tie?'👑 ':''}현재 ${rk[i]}등</span>
+    <span class="rs">${h.sc[i]!==null?label(h.par,h.sc[i]):'결과 선택'}</span></button>`).join('')}</div>`;
+  const ct=$('#ct');if(ct)ct.scrollIntoView({inline:'center',block:'nearest'});
+  $('#pv').onclick=()=>{S.cur--;game()};
+  $('#nx').onclick=next;
+  document.querySelectorAll('[data-par]').forEach(b=>b.onclick=()=>{const p=+b.dataset.par;if(p!=h.par){h.par=p;h.sc=S.ps.map(()=>null);h.near=null}game()});
+  document.querySelectorAll('[data-nr]').forEach(b=>b.onclick=()=>{h.near=+b.dataset.nr;game()});
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{h.dbl=b.dataset.d=='1';h.man=true;game()});
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>pick(+b.dataset.p));
+}
+function modal(html){const m=el(`<div class="mo"><div class="md">${html}</div></div>`);document.body.appendChild(m);return m}
+function pick(i){
+  const h=S.holes[S.cur];
+  const m=modal(`<h3>${esc(S.ps[i].name)} — ${S.cur+1}번홀 (Par${h.par})</h3><div class="ops">${opts(h.par).map(o=>`<button data-l="${o.l}" class="${h.sc[i]===o.l?'on':''}">${o.t}</button>`).join('')}</div><button class="cl">닫기</button>`);
+  m.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{h.sc[i]=+b.dataset.l;m.remove();game()});
+  m.querySelector('.cl').onclick=()=>m.remove();
+}
+function alertBox(msg){const m=modal(`<h3>${msg}</h3><button class="on" style="width:100%;font-weight:700">확인</button>`);m.querySelector('button').onclick=()=>m.remove()}
+function next(){
+  const h=S.holes[S.cur];
+  if(!done(h)){alertBox(h.par==3&&h.sc.every(v=>v!==null)?'니어리스트를 선택하거나 [없음]을 눌러 주십시오':'모든 참가자의 결과를 선택해 주십시오');return}
+  if(S.cur==17){S.screen='fin';return fin()}
+  const nh=S.holes[S.cur+1];
+  if(!nh.man)nh.dbl=trigger(h);
+  S.cur++;game();
+}
+
+/* ---------- 결과 ---------- */
+function fin(){
+  const t=totals(18),r=S.ps.map((p,i)=>({n:p.name,t:t[i]})).sort((a,b)=>b.t-a.t);
+  $('#app').innerHTML=`<div class="fin"><h1>🎉 축하합니다 🎉</h1><div class="rk">${r.map((x,i)=>`<div><span>${i+1}등 ${esc(x.n)}</span><span>${x.t}점</span></div>`).join('')}</div>
+  <button class="start on" id="ng">새게임 시작</button></div>`;
+  $('#ng').onclick=()=>{
+    const m=modal(`<h3>참가자가 동일합니까?</h3><div class="ops"><button data-y="1" class="on">예</button><button data-y="0">아니오</button></div>`);
+    m.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{
+      m.remove();stop();
+      if(b.dataset.y=='1'){S.screen='home';home()}else{S=fresh();home()}
+    });
+  };
+  confetti();
+}
+let raf,cv;
+function stop(){cancelAnimationFrame(raf);if(cv){cv.remove();cv=null}}
+function confetti(){
+  stop();cv=document.createElement('canvas');document.body.appendChild(cv);
+  const c=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+  const cols=['#e63946','#f4a261','#2a9d8f','#ffd23f','#4361ee','#f72585'];
+  const ps=Array.from({length:160},()=>({x:Math.random()*cv.width,y:-Math.random()*cv.height,w:6+Math.random()*7,h:10+Math.random()*8,v:2+Math.random()*3,s:(Math.random()-.5)*2,r:Math.random()*6,c:cols[Math.random()*6|0]}));
+  (function f(){
+    c.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.y+=p.v;p.x+=p.s;p.r+=.1;if(p.y>cv.height)p.y=-10;c.save();c.translate(p.x,p.y);c.rotate(p.r);c.fillStyle=p.c;c.fillRect(-p.w/2,-p.h/2,p.w,p.h);c.restore()});
+    raf=requestAnimationFrame(f);
+  })();
+}
+home();
+</script>
+</body>
+</html>
