@@ -60,7 +60,7 @@ button:disabled,button.dis{border-color:var(--dis);color:var(--dis);background:t
 .fin h1{font-size:clamp(34px,8vw,56px);margin:20px 0}
 .rk{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
 .rk div{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px;font-size:20px;font-weight:700}
-.rk div:first-child{border:3px solid #e0a800;font-size:26px}
+.rk div.g{border:3px solid #e0a800;font-size:26px}
 canvas{position:fixed;inset:0;pointer-events:none;z-index:40}
 </style>
 </head>
@@ -232,7 +232,7 @@ function next(){
 /* ---------- 결과 ---------- */
 function fin(){
   const t=totals(18),r=S.ps.map((p,i)=>({n:p.name,t:t[i]})).sort((a,b)=>b.t-a.t);
-  $('#app').innerHTML=`<div class="fin"><h1>🎉 축하합니다 🎉</h1><div class="rk">${r.map((x,i)=>`<div><span>${i+1}등 ${esc(x.n)}</span><span>${x.t}점</span></div>`).join('')}</div>
+  $('#app').innerHTML=`<div class="fin"><h1>🎉 축하합니다 🎉</h1><div class="rk">${r.map((x,i)=>{const k=1+r.filter(y=>y.t>x.t).length,tie=r.filter(y=>y.t==x.t).length>1;return `<div class="${k==1?'g':''}"><span>${tie?'공동 ':''}${k}등 ${esc(x.n)}</span><span>${x.t}점</span></div>`}).join('')}</div>
   <div style="max-width:480px;margin:16px auto;text-align:left">${board(17,'모두 수고하셨습니다')}</div><button class="start on" id="ng">새게임 시작</button></div>`;
   $('#ng').onclick=()=>{
     const m=modal(`<h3>참가자가 동일합니까?</h3><div class="ops"><button data-y="1" class="on">예</button><button data-y="0">아니오</button></div>`);
