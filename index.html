@@ -151,8 +151,8 @@ function holeMsgs(k){
   });
   return out;
 }
-function board(k){
-  const m=k>=0?holeMsgs(k):[];
+function board(k,fixed){
+  const m=fixed?[fixed]:(k>=0?holeMsgs(k):[]);
   return `<div class="cb"><h4>✏️ 무봉리의 한마디</h4>${m.length?m.map(x=>`<p>${esc(x)}</p>`).join(''):`<p class="e">${k<0?'1번홀 시작! 모두 화이팅입니다!':(k+1)+'번홀은 조용히 지나갔네요~'}</p>`}</div>`;
 }
 
@@ -161,13 +161,22 @@ function predict(){
   const n=S.ps.length,c=S.cur,R=18-c,t=totals(c);
   const sum=Array(n).fill(0),be=Array(n).fill(0),de=Array(n).fill(0);
   for(let k=0;k<c;k++){const h=S.holes[k];delta(h).forEach((v,i)=>sum[i]+=v);h.sc.forEach((l,i)=>{if(l===1)be[i]++;if(l===0){be[i]+=2;if(h.dbl)de[i]++}})}
-  const f=R/18,sh=c/(c+30);
-  const pr=S.ps.map((p,i)=>{const rate=c?Math.max(-.7,Math.min(.7,sum[i]/c*sh)):0;return{i,name:p.name,cur:t[i],be:be[i],exp:t[i]+rate*R+be[i]*0.5*f+de[i]*2*f}});
+  const BASEP=[.027,.162,.54,.216,.054,.005,.001];const prior=p=>{const ph=Math.max(-1,Math.min(1,.09*((p.avg||80)-80))),w=BASEP.map((v,l)=>v*Math.exp(ph*l)),z=w.reduce((a,b)=>a+b,0);return w.map(v=>v/z)};
+  const dist=S.ps.map((p,i)=>{const cnt=Array(7).fill(0);for(let k=0;k<c;k++)cnt[Math.min(6,S.holes[k].sc[i])]++;return prior(p).map((v,l)=>(v*30+cnt[l])/(30+c))});
   let sd=7+c*131;const rnd=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296};
-  const gs=()=>{let u=0;for(let q=0;q<6;q++)u+=rnd();return (u-3)/Math.sqrt(0.5)};
-  const wins=Array(n).fill(0),N=3000,s=9*Math.sqrt(R);
-  for(let q=0;q<N;q++){let b=-1e9,bi=0;pr.forEach((x,j)=>{const v=x.exp+gs()*s;if(v>b){b=v;bi=j}});wins[bi]++}
-  const a=0.3+0.7*c/18;pr.forEach((x,j)=>x.p=Math.min(.99,Math.max(.01,(1-a)/n+a*wins[j]/N)));
+  const draw=d=>{let u=rnd();for(let l=0;l<7;l++){u-=d[l];if(u<=0)return l}return 6};
+  const N=1500,wins=Array(n).fill(0),sumF=Array(n).fill(0),d0=S.holes[c].dbl;
+  for(let q=0;q<N;q++){
+    const f=t.slice();let dbl=d0;const dq=dist.map(d=>{const ph=(rnd()+rnd()+rnd()-1.5)*.6,w=d.map((v,l)=>v*Math.exp(-ph*l)),z=w.reduce((a,b)=>a+b,0);return w.map(v=>v/z)});
+    for(let k=0;k<R;k++){
+      const sc=dq.map(draw),m=dbl?2:1;
+      for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(sc[i]<sc[j]){const v=pts(sc[i],sc[j])*m;f[i]+=v;f[j]-=v}
+      dbl=trigger({par:4,sc});
+    }
+    const mx=Math.max(...f),nw=f.filter(v=>v==mx).length;
+    f.forEach((v,i)=>{sumF[i]+=v;if(v==mx)wins[i]+=1/nw});
+  }
+  const pr=S.ps.map((p,i)=>({i,name:p.name,cur:t[i],be:be[i],exp:sumF[i]/N,p:Math.min(.99,Math.max(.01,wins[i]/N))}));
   return pr;
 }
 function oracle(){
@@ -176,7 +185,7 @@ function oracle(){
   const m=el(`<div class="mo"><div class="win"><div class="wt"><span>📊 무봉리의 승부예측</span><i>—</i><i>□</i><i class="x" id="wx">✕</i></div>
   <div class="wm"><span>파일</span><span>보기</span><span>도움말</span></div>
   <div class="wb"><table><thead><tr><th>예상순위</th><th>참가자</th><th>현재점수</th><th>예상점수</th><th>우승확률</th></tr></thead><tbody>${rows.map((x,j)=>`<tr><td>${j+1}등 ${j+1<cr(x)?'▲':j+1>cr(x)?'▼':'－'}</td><td>${esc(x.name)}${x.be?` <small>(버디 ${x.be})</small>`:''}</td><td>${x.cur}</td><td>${Math.round(x.exp)}</td><td><div class="bar"><b style="width:${Math.round(x.p*100)}%"></b></div>${Math.round(x.p*100)}%</td></tr>`).join('')}</tbody></table></div>
-  <div class="ws">남은 홀 ${R}개 · 현재 점수, 남은 홀, 버디·배판 이글 가중치로 계산한 예상입니다</div></div></div>`);
+  <div class="ws">남은 홀 ${R}개 · 남은 홀을 배판 규칙까지 적용해 가상으로 수천 번 쳐 본 예상입니다 (버디·이글 기록이 많을수록 그 확률이 올라갑니다)</div></div></div>`);
   document.body.appendChild(m);
   m.querySelector('#wx').onclick=()=>m.remove();
   m.onclick=e=>{if(e.target===m)m.remove()};
@@ -224,7 +233,7 @@ function next(){
 function fin(){
   const t=totals(18),r=S.ps.map((p,i)=>({n:p.name,t:t[i]})).sort((a,b)=>b.t-a.t);
   $('#app').innerHTML=`<div class="fin"><h1>🎉 축하합니다 🎉</h1><div class="rk">${r.map((x,i)=>`<div><span>${i+1}등 ${esc(x.n)}</span><span>${x.t}점</span></div>`).join('')}</div>
-  <div style="max-width:480px;margin:16px auto;text-align:left">${board(17)}</div><button class="start on" id="ng">새게임 시작</button></div>`;
+  <div style="max-width:480px;margin:16px auto;text-align:left">${board(17,'모두 수고하셨습니다')}</div><button class="start on" id="ng">새게임 시작</button></div>`;
   $('#ng').onclick=()=>{
     const m=modal(`<h3>참가자가 동일합니까?</h3><div class="ops"><button data-y="1" class="on">예</button><button data-y="0">아니오</button></div>`);
     m.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{
