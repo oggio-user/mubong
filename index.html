@@ -162,12 +162,12 @@ function predict(){
   const sum=Array(n).fill(0),be=Array(n).fill(0),de=Array(n).fill(0);
   for(let k=0;k<c;k++){const h=S.holes[k];delta(h).forEach((v,i)=>sum[i]+=v);h.sc.forEach((l,i)=>{if(l===1)be[i]++;if(l===0){be[i]+=2;if(h.dbl)de[i]++}})}
   const f=R/18,sh=c/(c+30);
-  const pr=S.ps.map((p,i)=>{const rate=c?Math.max(-1,Math.min(1,sum[i]/c*sh)):0;return{i,name:p.name,cur:t[i],be:be[i],exp:t[i]+rate*R+be[i]*0.5*f+de[i]*2*f}});
+  const pr=S.ps.map((p,i)=>{const rate=c?Math.max(-.7,Math.min(.7,sum[i]/c*sh)):0;return{i,name:p.name,cur:t[i],be:be[i],exp:t[i]+rate*R+be[i]*0.5*f+de[i]*2*f}});
   let sd=7+c*131;const rnd=()=>{sd=(sd*1664525+1013904223)>>>0;return sd/4294967296};
   const gs=()=>{let u=0;for(let q=0;q<6;q++)u+=rnd();return (u-3)/Math.sqrt(0.5)};
-  const wins=Array(n).fill(0),N=3000,s=7*Math.sqrt(R);
+  const wins=Array(n).fill(0),N=3000,s=9*Math.sqrt(R);
   for(let q=0;q<N;q++){let b=-1e9,bi=0;pr.forEach((x,j)=>{const v=x.exp+gs()*s;if(v>b){b=v;bi=j}});wins[bi]++}
-  pr.forEach((x,j)=>x.p=Math.min(.99,Math.max(.01,wins[j]/N)));
+  const a=0.3+0.7*c/18;pr.forEach((x,j)=>x.p=Math.min(.99,Math.max(.01,(1-a)/n+a*wins[j]/N)));
   return pr;
 }
 function oracle(){
