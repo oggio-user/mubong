@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>무봉리의 골프존</title>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&family=Gaegu:wght@400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#ffffff;--card:#fff3b0;--ink:#000000;--sub:#333333;--g:#0050e6;--gd:#0a2a9c;--red:#e60000;--line:#111111;--dis:#9a9a9a;--ov:rgba(0,0,0,.6);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 
@@ -46,6 +46,16 @@ button:disabled,button.dis{border-color:var(--dis);color:var(--dis);background:t
 .md h3{margin:0 0 12px}.md .ops{display:flex;flex-wrap:wrap;gap:8px}.md .ops button{flex:1 0 40%;font-weight:700}
 .md .cl{margin-top:12px;width:100%;border-color:var(--line);color:var(--sub)}
 .rk2{font-size:15px;font-weight:700;color:var(--red)}.pc.on .rk2{color:#ffd400}.pc.first{border-color:#e60000;box-shadow:0 0 0 4px #ffd400;padding:18px 16px}.pc.first .n{font-size:23px}.pc.first .pt{font-size:42px}.pc.first .rk2{font-size:18px}
+.pc.last{padding:8px 10px}.pc.last .n{font-size:15px}.pc.last .pt{font-size:22px}.pc.last .rk2{font-size:12px}.pc.last .rs{font-size:12px;min-height:14px}
+.cb{margin-top:16px;background:#1b1b1b;border:10px solid #8a5a2b;border-radius:10px;padding:12px 16px;min-height:170px;max-height:320px;overflow:auto;box-shadow:inset 0 0 18px #000;font-family:'Gaegu','Noto Sans KR',sans-serif;font-weight:400;color:#fff;text-shadow:0 0 2px rgba(255,255,255,.3)}
+.cb h4{margin:0 0 6px;font-size:28px;font-weight:400;color:#ffe44d;text-shadow:none}.cb p{margin:4px 0;font-size:26px;line-height:1.3;letter-spacing:.5px}.cb p.e{opacity:.7}
+.win{background:#f0f0f0;border:1px solid #0a2a9c;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:680px;width:100%;color:#000}
+.wt{background:#0050e6;color:#fff;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;font-weight:700}.wt span{flex:1}
+.wt i{width:30px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:14px;cursor:pointer}.wt i.x{background:#e81123}
+.wm{display:flex;gap:16px;padding:4px 12px;background:#fff;border-bottom:1px solid #ccc;font-size:13px}.wb{padding:10px;max-height:60vh;overflow:auto}
+.wb table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #999;font-size:14px}.wb th{background:#e6e6e6;border:1px solid #bbb;padding:6px;text-align:left;font-size:13px}.wb td{border:1px solid #ddd;padding:6px}
+.wb tbody tr:first-child td{background:#fff3b0;font-weight:700}.bar{height:10px;background:#ddd;border:1px solid #999;margin-bottom:2px}.bar b{display:block;height:100%;background:#0050e6}
+.ws{background:#e6e6e6;border-top:1px solid #bbb;padding:5px 12px;font-size:12px;color:#333}
 .fin{text-align:center;position:relative}
 .fin h1{font-size:clamp(34px,8vw,56px);margin:20px 0}
 .rk{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
@@ -112,7 +122,7 @@ function trigger(h){
   const n=S.ps.length,cnt={};h.sc.forEach(l=>cnt[l]=(cnt[l]||0)+1);
   const th={3:3,4:3,5:4,6:4}[n];
   if(th&&Math.max(...Object.values(cnt))>=th)return true;
-  return h.sc.some(l=>l<=1||l>=5);
+  return h.sc.some(l=>l<=1||(l>=5&&!(h.par>=5&&l==5)&&!(h.par==6&&l==6)));
 }
 function totals(upto){
   const t=S.ps.map(p=>p.base);
@@ -121,22 +131,70 @@ function totals(upto){
 }
 const done=h=>h.sc.every(v=>v!==null)&&(h.par!=3||h.near!=null);
 
+/* ---------- 무봉리의 한마디 ---------- */
+function holeMsgs(k){
+  const h=S.holes[k],out=[],T0=totals(k),T1=totals(k+1);
+  S.ps.forEach((p,i)=>{
+    const L=h.sc[i],nm=p.name+'님 ',lv=x=>S.holes[x].sc[i];
+    const st=l=>{let c=0;for(let x=k;x>=0&&lv(x)===l;x--)c++;return c};
+    let nb=0;for(let x=0;x<=k;x++)if(lv(x)===1)nb++;
+    if(L===1){const bd=st(1);if(nb==1)out.push(nm+'이번게임 첫 버디 축하합니다');if(bd==2)out.push(nm+'두게임 연속 버디 대단하네요');if(bd==3)out.push(nm+'사이클링 버디 아니세요?');if(nb==4)out.push(nm+'오늘은 못 막겠는데요.')}
+    if(L===0){if(h.par==3)out.push(nm+'홀인원 축하드립니다. 식사 예약 하세요!!!');out.push(h.dbl?nm+'배판 이글 엄청나네요!!':nm+'아쉽지만 민판입니다. ㅠㅠ')}
+    if(h.par==3&&h.near===i)out.push(L<=2?nm+'야무지게 니어 드셨네요':nm+'아쉽게도 토하셨습니다.');
+    if(L===2&&st(2)==4)out.push(nm+'4연속 파 기록 중');
+    if(L===3&&st(3)==2)out.push(nm+'연속보기 힘내세요');
+    if(L===h.par+2)out.push(nm+'양파는 이제 그만!!');
+    const a=T0[i],b=T1[i];
+    if(a>=0&&b<0)out.push(nm+'지읏 되셨습니다');
+    if(a<=200&&b>200)out.push(nm+'오늘 컨디션 최고이신데요?');
+    else if(a<=150&&b>150&&b<=200)out.push(nm+'상승세!!!');
+  });
+  return out;
+}
+function board(k){
+  const m=k>=0?holeMsgs(k):[];
+  return `<div class="cb"><h4>✏️ 무봉리의 한마디</h4>${m.length?m.map(x=>`<p>${esc(x)}</p>`).join(''):`<p class="e">${k<0?'1번홀 시작! 모두 화이팅입니다!':(k+1)+'번홀은 조용히 지나갔네요~'}</p>`}</div>`;
+}
+
+/* ---------- 무봉리의 승부예측 ---------- */
+function predict(){
+  const n=S.ps.length,c=S.cur,R=18-c,t=totals(c);
+  const sum=Array(n).fill(0),be=Array(n).fill(0),de=Array(n).fill(0);
+  for(let k=0;k<c;k++){const h=S.holes[k];delta(h).forEach((v,i)=>sum[i]+=v);h.sc.forEach((l,i)=>{if(l===1)be[i]++;if(l===0){be[i]+=2;if(h.dbl)de[i]++}})}
+  const f=0.3+0.7*R/18;
+  const pr=S.ps.map((p,i)=>({i,name:p.name,cur:t[i],be:be[i],exp:t[i]+(c?sum[i]/c*(c/(c+4)):0)*R+be[i]*1.5*f+de[i]*6*f}));
+  const mx=Math.max(...pr.map(x=>x.exp)),T=1+R*0.8,w=pr.map(x=>Math.exp((x.exp-mx)/T)),ws=w.reduce((a,b)=>a+b,0);
+  pr.forEach((x,j)=>x.p=w[j]/ws);
+  return pr;
+}
+function oracle(){
+  const pr=predict(),t=pr.map(x=>x.cur),cr=x=>1+t.filter(v=>v>x.cur).length;
+  const rows=pr.slice().sort((a,b)=>b.exp-a.exp),R=18-S.cur;
+  const m=el(`<div class="mo"><div class="win"><div class="wt"><span>📊 무봉리의 승부예측</span><i>—</i><i>□</i><i class="x" id="wx">✕</i></div>
+  <div class="wm"><span>파일</span><span>보기</span><span>도움말</span></div>
+  <div class="wb"><table><thead><tr><th>예상순위</th><th>참가자</th><th>현재점수</th><th>예상점수</th><th>우승확률</th></tr></thead><tbody>${rows.map((x,j)=>`<tr><td>${j+1}등 ${j+1<cr(x)?'▲':j+1>cr(x)?'▼':'－'}</td><td>${esc(x.name)}${x.be?` <small>(버디 ${x.be})</small>`:''}</td><td>${x.cur}</td><td>${Math.round(x.exp)}</td><td><div class="bar"><b style="width:${Math.round(x.p*100)}%"></b></div>${Math.round(x.p*100)}%</td></tr>`).join('')}</tbody></table></div>
+  <div class="ws">남은 홀 ${R}개 · 현재 점수, 남은 홀, 버디·배판 이글 가중치로 계산한 예상입니다</div></div></div>`);
+  document.body.appendChild(m);
+  m.querySelector('#wx').onclick=()=>m.remove();
+  m.onclick=e=>{if(e.target===m)m.remove()};
+}
+
 /* ---------- 본게임 ---------- */
 function game(){
-  const h=S.holes[S.cur],t=totals(S.cur),ok=done(h);const rk=t.map(v=>1+t.filter(x=>x>v).length),tie=new Set(t).size==1;
+  const h=S.holes[S.cur],t=totals(S.cur),ok=done(h);const rk=t.map(v=>1+t.filter(x=>x>v).length),tie=new Set(t).size==1;const order=t.map((_,i)=>i).sort((a,b)=>t[b]-t[a]||a-b),mn=Math.min(...t);
   $('#app').innerHTML=`<div class="top"><h1>무봉리의 골프존</h1><span class="hn">${S.cur+1}번홀 입니다</span></div>
   <div class="nav"><button id="pv" ${S.cur?'':'disabled'}>이전홀</button><button id="nx" class="${ok?'on':'dis'}">${S.cur==17?'결과보기':'다음홀'}</button></div>
   <div class="tabs">${S.holes.map((_,i)=>`<span class="${i==S.cur?'cur':''}" ${i==S.cur?'id="ct"':''}>${i+1}번홀</span>`).join('')}</div>
   <div class="row"><b>파</b>${[3,4,5,6].map(p=>`<button data-par="${p}" class="${h.par==p?'on':''}">Par${p}</button>`).join('')}</div>
   ${h.par==3?`<div class="row"><b>니어리스트</b>${S.ps.map((p,i)=>`<button data-nr="${i}" class="${h.near===i?'on':''}">${esc(p.name)}</button>`).join('')}<button data-nr="-1" class="${h.near===-1?'on':''}">없음</button></div>`:''}
-  <div class="row"><b>판</b><button data-d="0" class="${h.dbl?'':'on'}">민판 1배</button><button data-d="1" class="dbl ${h.dbl?'on':''}">배판 2배</button></div>
-  <div class="pl">${S.ps.map((p,i)=>`<button class="pc ${h.sc[i]!==null?'on':''} ${rk[i]==1&&!tie?'first':''}" data-p="${i}">
+  <div class="row"><b>판</b><button data-d="0" class="${h.dbl?'':'on'}">민판 1배</button><button data-d="1" class="dbl ${h.dbl?'on':''}">배판 2배</button><button id="orc" style="margin-left:auto">📊 승부예측</button></div>
+  <div class="pl">${order.map(i=>{const p=S.ps[i];return `<button class="pc ${h.sc[i]!==null?'on':''} ${rk[i]==1&&!tie?'first':(t[i]==mn&&!tie?'last':'')}" data-p="${i}">
     ${h.near===i&&h.par==3?'<span class="nr">니어리스트</span>':''}
     <span class="n">${esc(p.name)}</span><span class="pt">${t[i]}</span><span class="rk2">${rk[i]==1&&!tie?'👑 ':''}현재 ${rk[i]}등</span>
-    <span class="rs">${h.sc[i]!==null?label(h.par,h.sc[i]):'결과 선택'}</span></button>`).join('')}</div>`;
+    <span class="rs">${h.sc[i]!==null?label(h.par,h.sc[i]):'결과 선택'}</span></button>`}).join('')}</div>${board(S.cur-1)}`;
   const ct=$('#ct');if(ct)ct.scrollIntoView({inline:'center',block:'nearest'});
   $('#pv').onclick=()=>{S.cur--;game()};
-  $('#nx').onclick=next;
+  $('#nx').onclick=next;$('#orc').onclick=oracle;
   document.querySelectorAll('[data-par]').forEach(b=>b.onclick=()=>{const p=+b.dataset.par;if(p!=h.par){h.par=p;h.sc=S.ps.map(()=>null);h.near=null}game()});
   document.querySelectorAll('[data-nr]').forEach(b=>b.onclick=()=>{h.near=+b.dataset.nr;game()});
   document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{h.dbl=b.dataset.d=='1';h.man=true;game()});
@@ -163,7 +221,7 @@ function next(){
 function fin(){
   const t=totals(18),r=S.ps.map((p,i)=>({n:p.name,t:t[i]})).sort((a,b)=>b.t-a.t);
   $('#app').innerHTML=`<div class="fin"><h1>🎉 축하합니다 🎉</h1><div class="rk">${r.map((x,i)=>`<div><span>${i+1}등 ${esc(x.n)}</span><span>${x.t}점</span></div>`).join('')}</div>
-  <button class="start on" id="ng">새게임 시작</button></div>`;
+  <div style="max-width:480px;margin:16px auto;text-align:left">${board(17)}</div><button class="start on" id="ng">새게임 시작</button></div>`;
   $('#ng').onclick=()=>{
     const m=modal(`<h3>참가자가 동일합니까?</h3><div class="ops"><button data-y="1" class="on">예</button><button data-y="0">아니오</button></div>`);
     m.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{
