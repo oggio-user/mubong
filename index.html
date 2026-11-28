@@ -6,13 +6,13 @@
 <title>무봉리의 골프존</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff8c9;--card:#ffffff;--ink:#000000;--sub:#333333;--g:#0050e6;--gd:#0a2a9c;--red:#e60000;--line:#111111;--dis:#9a9a9a;--ov:rgba(0,0,0,.6);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08081f;--card:#14143a;--ink:#ffffff;--sub:#e0e4ff;--g:#1f6fff;--gd:#0a2a9c;--red:#ff3b30;--line:#6a74ff;--dis:#6a6a8a;color-scheme:dark}}
+:root{--bg:#ffffff;--card:#fff3b0;--ink:#000000;--sub:#333333;--g:#0050e6;--gd:#0a2a9c;--red:#e60000;--line:#111111;--dis:#9a9a9a;--ov:rgba(0,0,0,.6);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.4 'Noto Sans KR',system-ui,sans-serif;min-height:100vh}
 .app{max-width:900px;margin:0 auto;padding:12px}
 h1{font-family:'Black Han Sans','Noto Sans KR',sans-serif;font-weight:400;margin:0;color:var(--gd);letter-spacing:.5px}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{color:#ffd400}}
+
 .title{font-size:clamp(30px,7vw,48px);text-align:center;margin:18px 0 4px}
 .sub{text-align:center;color:var(--sub);margin:0 0 18px}
 button{font:inherit;font-weight:700;cursor:pointer;border:3px solid var(--g);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 14px}
@@ -38,14 +38,14 @@ button:disabled,button.dis{border-color:var(--dis);color:var(--dis);background:t
 .row button.dbl.on{background:var(--red);border-color:var(--red)}
 .pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
 .pc{text-align:left;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;position:relative}
-.pc .n{font-weight:700;font-size:18px}.pc .pt{font-size:32px;font-weight:700;font-family:'Black Han Sans',sans-serif;color:#0050e6}.pc.on .pt{color:#ffd400}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pc:not(.on) .pt{color:#ffd400}}
+.pc .n{font-weight:700;font-size:18px}.pc .pt{font-size:32px;font-weight:700;font-family:'Black Han Sans',sans-serif;color:#0050e6}.pc.on .pt{color:#ffd400}
 .pc .rs{font-size:15px;min-height:20px;color:var(--sub)}.pc.on .rs{color:#fff}.pc.on .n{color:#fff}
 .pc .nr{position:absolute;right:10px;top:10px;font-size:12px;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px}
 .mo{position:fixed;inset:0;background:var(--ov);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 .md{background:var(--card);border-radius:20px;padding:18px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
 .md h3{margin:0 0 12px}.md .ops{display:flex;flex-wrap:wrap;gap:8px}.md .ops button{flex:1 0 40%;font-weight:700}
 .md .cl{margin-top:12px;width:100%;border-color:var(--line);color:var(--sub)}
-.rk2{font-size:15px;font-weight:700;color:var(--red)}.pc.on .rk2{color:#ffd400}.pc.first{border-color:#ffb800;box-shadow:0 0 0 4px #ffd400;padding:18px 16px}.pc.first .n{font-size:23px}.pc.first .pt{font-size:42px}.pc.first .rk2{font-size:18px}
+.rk2{font-size:15px;font-weight:700;color:var(--red)}.pc.on .rk2{color:#ffd400}.pc.first{border-color:#e60000;box-shadow:0 0 0 4px #ffd400;padding:18px 16px}.pc.first .n{font-size:23px}.pc.first .pt{font-size:42px}.pc.first .rk2{font-size:18px}
 .fin{text-align:center;position:relative}
 .fin h1{font-size:clamp(34px,8vw,56px);margin:20px 0}
 .rk{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
@@ -86,7 +86,7 @@ function startGame(){
   let ps=[];
   NAMES.forEach((nm,i)=>{if(S.sel[i])ps.push({name:i==5?(S.guest.trim()||'Guest'):nm,avg:S.avg[i]})});
   ps.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-  ps.forEach(p=>{p.base=100;ps.forEach(q=>{if(q!==p)p.base+=q.avg-p.avg})});
+  ps.forEach(p=>{p.base=100;ps.forEach(q=>{if(q!==p)p.base+=Math.max(-15,Math.min(15,p.avg-q.avg))})});
   S.ps=ps;S.cur=0;
   S.holes=Array.from({length:18},()=>({par:4,dbl:false,man:false,near:null,sc:ps.map(()=>null)}));
   S.screen='game';game();
